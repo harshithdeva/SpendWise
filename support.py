@@ -56,25 +56,44 @@ def close_db(connection=None, cursor=None):
     connection.close()
 
 
-def execute_query(operation=None, query=None):
+def execute_query(operation=None, query=None, params=None):
     """
     Execute Query
-    :param operation:
-    :param query:
-    :return: data incase search query or write to database
+    :param operation: "search" or "insert"
+    :param query: SQL query string with placeholders (?)
+    :param params: tuple or list of parameters for the query
+    :return: data in case of search query or None for write operations
     """
     connection, cursor = connect_db()
-    if operation == "search":
-        cursor.execute(query)
-        data = cursor.fetchall()
-        cursor.close()
-        return data
-    elif operation == "insert":
-        cursor.execute(query)
-        connection.commit()
-        cursor.close()
-        connection.close()
-        return None
+    try:
+        if operation == "search":
+            if params:
+                cursor.execute(query, params)
+            else:
+                cursor.execute(query)
+            data = cursor.fetchall()
+            cursor.close()
+            connection.close()
+            return data
+        elif operation == "insert":
+            if params:
+                cursor.execute(query, params)
+            else:
+                cursor.execute(query)
+            connection.commit()
+            cursor.close()
+            connection.close()
+            return None
+    finally:
+        # Ensure resources are closed in case of exceptions
+        try:
+            cursor.close()
+        except:
+            pass
+        try:
+            connection.close()
+        except:
+            pass
 
 
 def generate_df(df):
