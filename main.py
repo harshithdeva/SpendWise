@@ -247,11 +247,7 @@ def analysis():
                 width=180,
                 margin=dict(t=1, b=1, l=1, r=1),
             )
-            df2 = (
-                df.groupby(["Note", "Expense"])
-                .sum()
-                .reset_index()[["Expense", "Note", "Amount(₹)"]]
-            )
+            df2 = df.groupby(["Note", "Expense"])[["Amount(₹)"]].sum().reset_index()
             bar = support.meraBarChart(
                 df=df2,
                 x="Note",

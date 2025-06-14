@@ -623,11 +623,7 @@ def meraHeatmap(
 
 
 def month_bar(df=None, height=None, width=None):
-    t = (
-        df.groupby(["Month", "Expense"])
-        .sum()
-        .reset_index()[["Month", "Expense", "Amount(₹)"]]
-    )
+    t = df.groupby(["Month", "Expense"])["Amount(₹)"].sum().reset_index()
 
     month = [
         "January",
