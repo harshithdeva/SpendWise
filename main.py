@@ -30,10 +30,8 @@ def login_validation():
     if "user_id" not in session:  # if user not logged-in
         email = request.form.get("email")
         passwd = request.form.get("password")
-        query = """SELECT * FROM user_login WHERE email LIKE '{}' AND password LIKE '{}'""".format(
-            email, passwd
-        )
-        users = support.execute_query("search", query)
+        query = "SELECT * FROM user_login WHERE email = ? AND password = ?"
+        users = support.execute_query("search", query, (email, passwd))
         if len(users) > 0:  # if user details matched in db
             session["user_id"] = users[0][0]
             return redirect("/home")
@@ -51,14 +49,12 @@ def reset():
         email = request.form.get("femail")
         pswd = request.form.get("pswd")
         userdata = support.execute_query(
-            "search", """select * from user_login where email LIKE '{}'""".format(email)
+            "search", "select * from user_login where email = ?", (email,)
         )
         if len(userdata) > 0:
             try:
-                query = """update user_login set password = '{}' where email = '{}'""".format(
-                    pswd, email
-                )
-                support.execute_query("insert", query)
+                query = "update user_login set password = ? where email = ?"
+                support.execute_query("insert", query, (pswd, email))
                 flash("Password has been changed!!")
                 return redirect("/")
             except:
@@ -90,14 +86,15 @@ def registration():
             len(name) > 5 and len(email) > 10 and len(passwd) > 5
         ):  # if input details satisfy length condition
             try:
-                query = """INSERT INTO user_login(username, email, password) VALUES('{}','{}','{}')""".format(
-                    name, email, passwd
+                query = (
+                    "INSERT INTO user_login(username, email, password) VALUES(?,?,?)"
                 )
-                support.execute_query("insert", query)
+                support.execute_query("insert", query, (name, email, passwd))
 
                 user = support.execute_query(
                     "search",
-                    """SELECT * from user_login where email LIKE '{}'""".format(email),
+                    "SELECT * from user_login where email = ?",
+                    (email,),
                 )
                 session["user_id"] = user[0][
                     0
@@ -134,15 +131,13 @@ def feedback():
 @app.route("/home")
 def home():
     if "user_id" in session:  # if user is logged-in
-        query = """select * from user_login where user_id = {} """.format(
-            session["user_id"]
-        )
-        userdata = support.execute_query("search", query)
+        query = "select * from user_login where user_id = ?"
+        userdata = support.execute_query("search", query, (session["user_id"],))
 
-        table_query = """select * from user_expenses where user_id = {} order by pdate desc""".format(
-            session["user_id"]
+        table_query = (
+            "select * from user_expenses where user_id = ? order by pdate desc"
         )
-        table_data = support.execute_query("search", table_query)
+        table_data = support.execute_query("search", table_query, (session["user_id"],))
         df = pd.DataFrame(
             table_data, columns=["#", "User_Id", "Date", "Expense", "Amount", "Note"]
         )
@@ -217,11 +212,10 @@ def add_expense():
             amount = request.form.get("amount")
             notes = request.form.get("notes")
             try:
-                query = """insert into user_expenses (user_id, pdate, expense, amount, pdescription) values 
-                ({}, '{}','{}',{},'{}')""".format(
-                    user_id, date, expense, amount, notes
+                query = """insert into user_expenses (user_id, pdate, expense, amount, pdescription) values (?, ?, ?, ?, ?)"""
+                support.execute_query(
+                    "insert", query, (user_id, date, expense, amount, notes)
                 )
-                support.execute_query("insert", query)
                 flash("Saved!!")
             except:
                 flash("Something went wrong.")
@@ -234,15 +228,10 @@ def add_expense():
 @app.route("/analysis")
 def analysis():
     if "user_id" in session:  # if already logged-in
-        query = """select * from user_login where user_id = {} """.format(
-            session["user_id"]
-        )
-        userdata = support.execute_query("search", query)
-        query2 = """select pdate,expense, pdescription, amount from user_expenses where user_id = {}""".format(
-            session["user_id"]
-        )
-
-        data = support.execute_query("search", query2)
+        query = "select * from user_login where user_id = ?"
+        userdata = support.execute_query("search", query, (session["user_id"],))
+        query2 = "select pdate,expense, pdescription, amount from user_expenses where user_id = ?"
+        data = support.execute_query("search", query2, (session["user_id"],))
         df = pd.DataFrame(data, columns=["Date", "Expense", "Note", "Amount(₹)"])
         df = support.generate_df(df)
 
@@ -321,10 +310,8 @@ def analysis():
 @app.route("/profile")
 def profile():
     if "user_id" in session:  # if logged-in
-        query = """select * from user_login where user_id = {} """.format(
-            session["user_id"]
-        )
-        userdata = support.execute_query("search", query)
+        query = "select * from user_login where user_id = ?"
+        userdata = support.execute_query("search", query, (session["user_id"],))
         return render_template(
             "profile.html", user_name=userdata[0][1], email=userdata[0][2]
         )
@@ -336,27 +323,21 @@ def profile():
 def update_profile():
     name = request.form.get("name")
     email = request.form.get("email")
-    query = """select * from user_login where user_id = {} """.format(
-        session["user_id"]
-    )
-    userdata = support.execute_query("search", query)
-    query = """select * from user_login where email = "{}" """.format(email)
-    email_list = support.execute_query("search", query)
+    query = "select * from user_login where user_id = ?"
+    userdata = support.execute_query("search", query, (session["user_id"],))
+    query = "select * from user_login where email = ?"
+    email_list = support.execute_query("search", query, (email,))
     if name != userdata[0][1] and email != userdata[0][2] and len(email_list) == 0:
-        query = """update user_login set username = '{}', email = '{}' where user_id = '{}'""".format(
-            name, email, session["user_id"]
-        )
-        support.execute_query("insert", query)
+        query = "update user_login set username = ?, email = ? where user_id = ?"
+        support.execute_query("insert", query, (name, email, session["user_id"]))
         flash("Name and Email updated!!")
         return redirect("/profile")
     elif name != userdata[0][1] and email != userdata[0][2] and len(email_list) > 0:
         flash("Email already exists, try another!!")
         return redirect("/profile")
     elif name == userdata[0][1] and email != userdata[0][2] and len(email_list) == 0:
-        query = """update user_login set email = '{}' where user_id = '{}'""".format(
-            email, session["user_id"]
-        )
-        support.execute_query("insert", query)
+        query = "update user_login set email = ? where user_id = ?"
+        support.execute_query("insert", query, (email, session["user_id"]))
         flash("Email updated!!")
         return redirect("/profile")
     elif name == userdata[0][1] and email != userdata[0][2] and len(email_list) > 0:
@@ -364,10 +345,8 @@ def update_profile():
         return redirect("/profile")
 
     elif name != userdata[0][1] and email == userdata[0][2]:
-        query = """update user_login set username = '{}' where user_id = '{}'""".format(
-            name, session["user_id"]
-        )
-        support.execute_query("insert", query)
+        query = "update user_login set username = ? where user_id = ?"
+        support.execute_query("insert", query, (name, session["user_id"]))
         flash("Name updated!!")
         return redirect("/profile")
     else:
