@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About - SpendWise</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
+  <style>
+    body, html {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      height: 100%;
+      background: linear-gradient(to bottom right, #007991, #78ffd6);
+      color: #fff;
+    }
+
+    .header {
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: white;
+      padding: 12px 30px;
+      font-size: 1.2rem;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-size: 0.95rem;
+    }
+
+    .content-container {
+      max-width: 900px;
+      margin: 80px auto;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.15);
+    }
+
+    h2 {
+      color: #ffffff;
+      font-weight: 600;
+      margin-bottom: 30px;
+    }
+
+    p {
+      color: #f1f1f1;
+      font-size: 1.1rem;
+      line-height: 1.8;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+      color: #ffffffcc;
+    }
+
+    @media (max-width: 768px) {
+      .content-container {
+        margin: 40px 20px;
+        padding: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div>SpendWise</div>
+    <div>
+      <a href="/">Home</a>
+      <a href="/contact">Contact</a>
+    </div>
+  </div>
+
+  <div class="content-container">
+    <h2>About SpendWise</h2>
+    <p><strong>SpendWise</strong> is a personal finance tracker that helps users manage income, expenses, savings, and investments through interactive charts and a clean, intuitive dashboard.</p>
+
+    <p>The application is built with <strong>Flask</strong> for the backend and <strong>Plotly</strong> for data visualizations. It supports user authentication and session management, with all financial data currently stored in a <strong>SQLite</strong> database.</p>
+
+    <p>Planned future upgrades include a transition to <strong>MySQL</strong> for scalability, the addition of downloadable <strong>reports</strong>, and expanded insights through goal tracking and trend detection.</p>
+  </div>
+
+  <div class="footer">
+    © 2025 SpendWise | Built with 💚 using Flask
+  </div>
+
+</body>
+</html>
