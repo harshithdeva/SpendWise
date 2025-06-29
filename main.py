@@ -1,4 +1,12 @@
 from flask import Flask, render_template, request, redirect, session, flash, jsonify
+from flask_login import (
+    LoginManager,
+    login_required,
+    login_user,
+    logout_user,
+    current_user,
+)
+from flask_session import Session  # for session management
 import os
 from datetime import timedelta  # used for setting session timeout
 import pandas as pd
@@ -134,6 +142,7 @@ def feedback():
 
 
 @app.route("/home")
+@login_required
 def home():
     if "user_id" in session:  # if user is logged-in
         query = "select * from user_login where user_id = ?"
@@ -209,6 +218,7 @@ def home():
 
 
 @app.route("/home/add_expense", methods=["POST"])
+@login_required
 def add_expense():
     if "user_id" in session:
         user_id = session["user_id"]
@@ -232,6 +242,7 @@ def add_expense():
 
 
 @app.route("/analysis")
+@login_required
 def analysis():
     if "user_id" in session:  # if already logged-in
         query = "select * from user_login where user_id = ?"
@@ -310,6 +321,7 @@ def analysis():
 
 
 @app.route("/profile")
+@login_required
 def profile():
     if "user_id" in session:  # if logged-in
         query = "select * from user_login where user_id = ?"
@@ -322,6 +334,7 @@ def profile():
 
 
 @app.route("/updateprofile", methods=["POST"])
+@login_required
 def update_profile():
     name = request.form.get("name")
     email = request.form.get("email")
