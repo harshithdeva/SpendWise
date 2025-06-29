@@ -150,7 +150,8 @@ def home():
 
         try:
             bar, pie, line, stack_bar = support.generate_Graph(df)
-        except:
+        except Exception as e:
+            print("⚠️ Error generating charts:", e)
             bar, pie, line, stack_bar = None, None, None, None
         try:
             monthly_data = support.get_monthly_data(df, res=None)
@@ -232,14 +233,14 @@ def analysis():
         userdata = support.execute_query("search", query, (session["user_id"],))
         query2 = "select pdate,expense, pdescription, amount from user_expenses where user_id = ?"
         data = support.execute_query("search", query2, (session["user_id"],))
-        df = pd.DataFrame(data, columns=["Date", "Expense", "Note", "Amount(₹)"])
+        df = pd.DataFrame(data, columns=["Date", "Expense", "Note", "Amount"])
         df = support.generate_df(df)
 
         if df.shape[0] > 0:
             pie = support.meraPie(
                 df=df,
                 names="Expense",
-                values="Amount(₹)",
+                values="Amount",
                 hole=0.7,
                 hole_text="Expense",
                 hole_font=20,
@@ -247,11 +248,11 @@ def analysis():
                 width=180,
                 margin=dict(t=1, b=1, l=1, r=1),
             )
-            df2 = df.groupby(["Note", "Expense"])[["Amount(₹)"]].sum().reset_index()
+            df2 = df.groupby(["Note", "Expense"])[["Amount"]].sum().reset_index()
             bar = support.meraBarChart(
                 df=df2,
                 x="Note",
-                y="Amount(₹)",
+                y="Amount",
                 color="Expense",
                 height=180,
                 x_label="Category",
@@ -260,7 +261,7 @@ def analysis():
             line = support.meraLine(
                 df=df,
                 x="Date",
-                y="Amount(₹)",
+                y="Amount",
                 color="Expense",
                 slider=False,
                 show_legend=False,
@@ -269,9 +270,9 @@ def analysis():
             scatter = support.meraScatter(
                 df,
                 "Date",
-                "Amount(₹)",
+                "Amount",
                 "Expense",
-                "Amount(₹)",
+                "Amount",
                 slider=False,
             )
             heat = support.meraHeatmap(

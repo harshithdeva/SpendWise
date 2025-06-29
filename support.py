@@ -104,6 +104,7 @@ def generate_df(df):
     """
     df = df
     df["Date"] = pd.to_datetime(df["Date"])
+    df["Amount"] = pd.to_numeric(df["Amount"], errors="coerce").fillna(0)
     df["Year"] = df["Date"].dt.year
     df["Month_name"] = df["Date"].dt.month_name()
     df["Month"] = df["Date"].dt.month
@@ -147,20 +148,23 @@ def top_tiles(df=None):
 
 
 def generate_Graph(df=None):
-    """
-    create graph
-    :param df: Dataframe
-    :return:
-    """
-    if df is not None and df.shape[0] > 0:
-        # Bar_chart
-        bar_data = df[["Expense", "Amount"]].groupby("Expense").sum().reset_index()
+    if df is None or df.empty:
+        return None
+
+    if not {"Expense", "Amount", "Note", "Date"}.issubset(df.columns):
+        return None
+
+    try:
+        # Bar Chart
+        bar_data = df.groupby("Expense")[["Amount"]].sum().reset_index()
+
         bar = px.bar(
-            x=bar_data["Expense"],
-            y=bar_data["Amount"],
-            color=bar_data["Expense"],
+            data_frame=bar_data,
+            x="Expense",
+            y="Amount",
+            color="Expense",
             template="plotly_dark",
-            labels={"x": "Expense Type", "y": "Balance (₹)"},
+            labels={"Expense": "Expense", "Amount": "Amount"},
             height=287,
         )
         bar.update(layout_showlegend=False)
@@ -169,13 +173,15 @@ def generate_Graph(df=None):
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
         )
-
+        print("BAR DATA:")
+        print(bar_data)
         # Stacked Bar Chart
-        s = df.groupby(["Note", "Expense"]).sum().reset_index()
+        s = df.groupby(["Note", "Expense"])[["Amount"]].sum().reset_index()
         stack = px.bar(
-            x=s["Note"],
-            y=s["Amount"],
-            color=s["Expense"],
+            s,
+            x="Note",
+            y="Amount",
+            color="Expense",
             barmode="stack",
             template="plotly_dark",
             labels={"x": "Category", "y": "Balance (₹)"},
@@ -205,7 +211,7 @@ def generate_Graph(df=None):
             plot_bgcolor="rgba(0,0,0,0)",
         )
 
-        # Sunburst pie chart
+        # Sunburst Chart
         pie = px.sunburst(
             df,
             path=["Expense", "Note"],
@@ -213,20 +219,22 @@ def generate_Graph(df=None):
             height=280,
             template="plotly_dark",
         )
-        # pie.update_layout(title_text='Utility Chart', title_x=0.5)
         pie.update_layout(
             margin=dict(l=0, r=0, t=0, b=0),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
         )
 
-        bar = json.dumps(bar, cls=plotly.utils.PlotlyJSONEncoder)
-        pie = json.dumps(pie, cls=plotly.utils.PlotlyJSONEncoder)
-        line = json.dumps(line, cls=plotly.utils.PlotlyJSONEncoder)
-        stack_bar = json.dumps(stack, cls=plotly.utils.PlotlyJSONEncoder)
+        return (
+            json.dumps(bar, cls=plotly.utils.PlotlyJSONEncoder),
+            json.dumps(pie, cls=plotly.utils.PlotlyJSONEncoder),
+            json.dumps(line, cls=plotly.utils.PlotlyJSONEncoder),
+            json.dumps(stack, cls=plotly.utils.PlotlyJSONEncoder),
+        )
 
-        return bar, pie, line, stack_bar
-    return None
+    except Exception as e:
+        # print("generate_Graph failed:", e)
+        return None, None, None, None
 
 
 def makePieChart(
@@ -241,28 +249,41 @@ def makePieChart(
     textinfo="percent+label",
     margin=2,
 ):
-    fig = px.pie(
-        df[df["Expense"] == expense],
-        names=names,
-        values=values,
-        hole=hole,
-        color_discrete_sequence=color_discrete_sequence,
-        height=size,
-        width=size,
-    )
-    fig.update_traces(textposition=textposition, textinfo=textinfo)
-    fig.update_layout(
-        annotations=[
-            dict(text=expense, y=0.5, font_size=20, font_color="white", showarrow=False)
-        ]
-    )
-    fig.update_layout(
-        margin=dict(l=margin, r=margin, t=margin, b=margin),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-    )
-    fig.update(layout_showlegend=False)
-    return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    try:
+        dff = df[df["Expense"] == expense]
+        if dff.empty or names not in dff.columns or values not in dff.columns:
+            return None
+
+        fig = px.pie(
+            dff,
+            names=names,
+            values=values,
+            hole=hole,
+            color_discrete_sequence=color_discrete_sequence,
+            height=size,
+            width=size,
+        )
+        fig.update_traces(textposition=textposition, textinfo=textinfo)
+        fig.update_layout(
+            annotations=[
+                dict(
+                    text=expense,
+                    y=0.5,
+                    font_size=20,
+                    font_color="white",
+                    showarrow=False,
+                )
+            ],
+            margin=dict(l=margin, r=margin, t=margin, b=margin),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+        )
+        fig.update(layout_showlegend=False)
+        return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    except Exception as e:
+        # print("makePieChart failed:", e)
+        return None
 
 
 def meraBarChart(
@@ -281,55 +302,72 @@ def meraBarChart(
     y_tickangle=0,
     barmode="relative",
 ):
-    bar = px.bar(
-        data_frame=df,
-        x=x,
-        y=y,
-        color=color,
-        template="plotly_dark",
-        barmode=barmode,
-        labels={"x": x_label, "y": y_label},
-        height=height,
-        width=width,
-    )
-    bar.update(layout_showlegend=show_legend)
-    bar.update_layout(
-        margin=dict(l=2, r=2, t=2, b=2),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-    )
-    bar.update_layout(
-        xaxis=dict(showticklabels=show_xtick, tickangle=x_tickangle),
-        yaxis=dict(showticklabels=show_ytick, tickangle=y_tickangle),
-    )
+    if df is None or df.empty or x not in df.columns or y not in df.columns:
+        return None
 
-    return json.dumps(bar, cls=plotly.utils.PlotlyJSONEncoder)
+    try:
+        bar = px.bar(
+            data_frame=df,
+            x=x,
+            y=y,
+            color=color,
+            template="plotly_dark",
+            barmode=barmode,
+            labels={x: x_label or x, y: y_label or y},
+            height=height,
+            width=width,
+        )
+        bar.update(layout_showlegend=show_legend)
+        bar.update_layout(
+            margin=dict(l=2, r=2, t=2, b=2),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+        )
+        bar.update_layout(
+            xaxis=dict(showticklabels=show_xtick, tickangle=x_tickangle),
+            yaxis=dict(showticklabels=show_ytick, tickangle=y_tickangle),
+        )
+
+        return json.dumps(bar, cls=plotly.utils.PlotlyJSONEncoder)
+
+    except Exception as e:
+        print("⚠️ meraBarChart failed:", e)
+        return None
 
 
 def get_monthly_data(df, year=datetime.datetime.today().year, res="int"):
     """
-    Data table
-    :param res:
-    :param df: Dataframe
-    :param year: present year
-    :return: list of dictionary
+    Prepare last 3 months of categorized expense data.
+
+    :param df: DataFrame with 'Expense', 'Amount', 'Month', 'Year'
+    :param year: Year to filter
+    :param res: "int" or "str" format for values
+    :return: list of dictionaries, one per month
     """
-    temp = pd.DataFrame()
-    d_year = df.groupby("Year").get_group(year)[["Expense", "Amount", "Month"]]
+    if df is None or df.empty or "Year" not in df.columns or "Month" not in df.columns:
+        return []
+
+    if year not in df["Year"].unique():
+        return []
+
+    # Filter data for the given year
+    d_year = df[df["Year"] == year][["Expense", "Amount", "Month"]]
     d_month = d_year.groupby("Month")
-    for month in list(d_month.groups.keys())[::-1][:3]:
-        dexp = d_month.get_group(month).groupby("Expense").sum().reset_index()
-        for row in range(dexp.shape[0]):
-            temp = temp.append(
-                dict(
-                    {
-                        "Expense": dexp.iloc[row]["Expense"],
-                        "Amount": dexp.iloc[row]["Amount"],
-                        "Month": month,
-                    }
-                ),
-                ignore_index=True,
+    recent_months = sorted(d_month.groups.keys(), reverse=True)[:3]
+
+    rows = []
+    for month in recent_months:
+        grouped = (
+            d_month.get_group(month).groupby("Expense")[["Amount"]].sum().reset_index()
+        )
+        for _, row in grouped.iterrows():
+            rows.append(
+                {"Expense": row["Expense"], "Amount": row["Amount"], "Month": month}
             )
+
+    temp = pd.DataFrame(rows)
+
+    # Month number to name map
     month_name = {
         1: "January",
         2: "February",
@@ -344,146 +382,196 @@ def get_monthly_data(df, year=datetime.datetime.today().year, res="int"):
         11: "November",
         12: "December",
     }
-    ls = []
-    for month in list(d_month.groups.keys())[::-1][:3]:
-        m = {}
-        s = temp[temp["Month"] == month]
-        m["Month"] = month_name[month]
-        for i in range(s.shape[0]):
+
+    result = []
+    for month in recent_months:
+        m_data = temp[temp["Month"] == month]
+        summary = {"Month": month_name.get(month, str(month))}
+        for _, row in m_data.iterrows():
             if res == "int":
-                m[s.iloc[i]["Expense"]] = int(s.iloc[i]["Amount"])
+                summary[row["Expense"]] = int(row["Amount"])
             else:
-                m[s.iloc[i]["Expense"]] = num2MB(int(s.iloc[i]["Amount"]))
-        ls.append(m)
-    return ls
+                summary[row["Expense"]] = num2MB(int(row["Amount"]))
+        result.append(summary)
+
+    return result
 
 
 def sort_summary(df):
     """
-    Generate data for cards
-    :param df: Dataframe
-    :return: list of dictionary
+    Generate data for cards like highest earning month, average income/spending/saving/investing.
+    :param df: DataFrame (must include columns created by generate_df)
+    :return: list of summary dictionaries
     """
+    if df is None or df.empty:
+        return []
+
     datas = []
 
-    h_month, h_year, h_amount = [], [], []
-    for year in list(df["Year"].unique()):
-        d = df[df["Year"] == year]
-        data = (
-            d[d["Expense"] == "Earning"]
-            .groupby("Month_name")
-            .sum()["Amount"]
-            .reset_index()
-            .sort_values("Amount", ascending=False)
-            .iloc[0]
+    # Highest monthly earning
+    try:
+        earning_df = df[df["Expense"] == "Earning"]
+        if not earning_df.empty:
+            grouped = earning_df.groupby(["Year", "Month_name"]).sum(numeric_only=True)[
+                "Amount"
+            ]
+            top_month = grouped.idxmax()
+            amount = grouped.max()
+            datas.append(
+                {
+                    "head": "₹" + str(num2MB(amount)),
+                    "main": f"{top_month[1]}'{str(top_month[0])[2:]}",
+                    "msg": "Highest income in a month",
+                }
+            )
+        else:
+            datas.append(
+                {
+                    "head": "₹0",
+                    "main": "N/A",
+                    "msg": "No income data",
+                }
+            )
+    except Exception:
+        datas.append(
+            {
+                "head": "₹0",
+                "main": "N/A",
+                "msg": "Error finding income data",
+            }
         )
-        h_month.append(data["Month_name"])
-        h_year.append(year)
-        h_amount.append(data["Amount"])
-    amount = max(h_amount)
-    month = h_month[h_amount.index(amount)]
-    year = h_year[h_amount.index(amount)]
-    datas.append(
-        {
-            "head": "₹" + str(num2MB(amount)),
-            "main": f"{month}'{str(year)[2:]}",
-            "msg": "Highest income in a month",
-        }
-    )
 
-    # per day avg income
-    per_day_income = (
-        df[df["Expense"] == "Earning"]["Amount"].sum() / df["Date"].nunique()
-    )
-    datas.append(
-        {
-            "head": "Income",
-            "main": "₹" + str(num2MB(per_day_income)),
-            "msg": "You earn everyday",
-        }
-    )
+    # Per day average income
+    try:
+        income_total = df[df["Expense"] == "Earning"]["Amount"].sum()
+        unique_days = df["Date"].nunique()
+        avg_income = income_total / unique_days if unique_days > 0 else 0
+        datas.append(
+            {
+                "head": "Income",
+                "main": "₹" + str(num2MB(avg_income)),
+                "msg": "You earn everyday",
+            }
+        )
+    except Exception:
+        datas.append(
+            {
+                "head": "Income",
+                "main": "₹0",
+                "msg": "Data missing",
+            }
+        )
 
-    # per week avg spend
-    per_week_saving = (
-        df[df["Expense"] == "Saving"].groupby("Week").sum()["Amount"].mean()
-    )
-    datas.append(
-        {
-            "head": "Saving",
-            "main": "₹" + str(num2MB(per_week_saving)),
-            "msg": "You save every week",
-        }
-    )
+    # Weekly average saving
+    try:
+        saving_df = df[df["Expense"] == "Saving"]
+        if not saving_df.empty:
+            avg_weekly_saving = saving_df.groupby("Week")["Amount"].mean().mean()
+            datas.append(
+                {
+                    "head": "Saving",
+                    "main": "₹" + str(num2MB(avg_weekly_saving)),
+                    "msg": "You save every week",
+                }
+            )
+    except Exception:
+        datas.append(
+            {
+                "head": "Saving",
+                "main": "₹0",
+                "msg": "No weekly savings",
+            }
+        )
 
-    # per month income
-    avg_earn = (
-        df[df["Expense"] == "Earning"]
-        .groupby("Month")
-        .sum()["Amount"]
-        .reset_index()["Amount"]
-        .mean()
-    )
-    # per month spend
-    avg_spd = (
-        df[df["Expense"] == "Spend"]
-        .groupby("Month")
-        .sum()["Amount"]
-        .reset_index()["Amount"]
-        .mean()
-    )
+    # Monthly spending %
+    try:
+        monthly_earning = (
+            df[df["Expense"] == "Earning"].groupby("Month")["Amount"].sum().mean()
+        )
+        monthly_spend = (
+            df[df["Expense"] == "Spend"].groupby("Month")["Amount"].sum().mean()
+        )
+        if monthly_earning > 0:
+            spend_pct = round((monthly_spend / monthly_earning) * 100, 2)
+        else:
+            spend_pct = 0
+        datas.append(
+            {
+                "head": "Spend",
+                "main": f"{spend_pct}%",
+                "msg": "You spend every month",
+            }
+        )
+    except Exception:
+        datas.append(
+            {
+                "head": "Spend",
+                "main": "0%",
+                "msg": "Spend data unavailable",
+            }
+        )
 
-    # per month avg spend % wrt income
-    monthly_spend = (avg_spd / avg_earn) * 100
-    datas.append(
-        {
-            "head": "Spend",
-            "main": f"{round(monthly_spend, 2)}%",
-            "msg": "You spend every month",
-        }
-    )
-
-    # every minute invest
-    every_minute_invest = round(
-        df[df["Expense"] == "Investment"].groupby("Day").sum()["Amount"].mean()
-        / 24
-        / 60,
-        2,
-    )
-    datas.append(
-        {
-            "head": "Invest",
-            "main": f"₹{round(every_minute_invest, 2)}",
-            "msg": "You invest every minute",
-        }
-    )
+    # Per minute investment
+    try:
+        invest_per_min = df[df["Expense"] == "Investment"].groupby("Day")[
+            "Amount"
+        ].sum().mean() / (24 * 60)
+        datas.append(
+            {
+                "head": "Invest",
+                "main": f"₹{round(invest_per_min, 2)}",
+                "msg": "You invest every minute",
+            }
+        )
+    except Exception:
+        datas.append(
+            {
+                "head": "Invest",
+                "main": "₹0",
+                "msg": "No investment data",
+            }
+        )
 
     return datas
 
 
 def expense_goal(df):
     """
-    Monthly goal data
-    :param df: Dataframe
-    :return: list of dictionary
+    Compare current vs previous month for each expense type.
+    :param df: DataFrame
+    :return: list of dictionaries showing increase/decrease
     """
-    goal_ls = []
-    for expense in list(df["Expense"].unique()):
-        dic = {"type": expense}
-        a = get_monthly_data(df, res="int")
-        x = []
-        for i in a[:2]:
-            x.append(i[expense])
-        first, second = x[0], x[1]
-        diff = int(first) - int(second)
-        percent = round((diff / second) * 100, 1)
-        if percent > 0:
-            dic["status"] = "increased"
-        else:
-            dic["status"] = "decreased"
-        dic["percent"] = abs(percent)
-        dic["value"] = "₹" + num2MB(x[0])
-        goal_ls.append(dic)
-    return goal_ls
+    if df is None or df.empty:
+        return []
+
+    try:
+        monthly_data = get_monthly_data(df, res="int")
+        if len(monthly_data) < 2:
+            return []
+
+        current = monthly_data[0]
+        previous = monthly_data[1]
+        expense_types = ["Earning", "Spend", "Investment", "Saving"]
+
+        goals = []
+        for exp in expense_types:
+            val_curr = current.get(exp, 0)
+            val_prev = previous.get(exp, 1)  # avoid division by zero
+            diff = val_curr - val_prev
+            percent = round((diff / val_prev) * 100, 1) if val_prev != 0 else 0
+
+            goals.append(
+                {
+                    "type": exp,
+                    "status": "increased" if percent > 0 else "decreased",
+                    "percent": abs(percent),
+                    "value": "₹" + num2MB(val_curr),
+                }
+            )
+        return goals
+
+    except Exception:
+        return []
 
 
 # --------------- Analysis -----------------
@@ -600,8 +688,19 @@ def meraHeatmap(
     width=None,
     title=None,
 ):
+    # Check if necessary columns exist and are not empty
+    if df is None or x not in df.columns or y not in df.columns:
+        return None
+    if df[x].nunique() == 0 or df[y].nunique() == 0:
+        return None
+
+    # Generate crosstab
+    cross_data = pd.crosstab(df[x], df[y])
+    if cross_data.empty:
+        return None
+
     fig = px.imshow(
-        pd.crosstab(df[x], df[y]),
+        cross_data,
         text_auto=text_auto,
         aspect=aspect,
         height=height,
@@ -623,7 +722,7 @@ def meraHeatmap(
 
 
 def month_bar(df=None, height=None, width=None):
-    t = df.groupby(["Month", "Expense"])["Amount(₹)"].sum().reset_index()
+    t = df.groupby(["Month", "Expense"])["Amount"].sum().reset_index()
 
     month = [
         "January",
@@ -650,7 +749,7 @@ def month_bar(df=None, height=None, width=None):
     fig = px.bar(
         t,
         x="Month",
-        y="Amount(₹)",
+        y="Amount",
         color="Expense",
         text_auto=True,
         height=height,
@@ -672,7 +771,7 @@ def meraSunburst(df=None, height=None, width=None):
     fig = px.sunburst(
         df,
         path=["Year", "Expense", "Note"],
-        values="Amount(₹)",
+        values="Amount",
         height=height,
         width=width,
     )
