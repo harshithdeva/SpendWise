@@ -31,7 +31,7 @@ var layout = {
 
 var config = {responsive: true}
 
-Plotly.newPlot('myDiv', data, layout, config );
+// Plotly.newPlot('myDiv', data, layout, config );
 
 
 

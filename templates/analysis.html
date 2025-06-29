@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/css/multi-select-tag.css">
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css">
         <title>Expense Tracker - Analysis</title>
     </head>
     <body class="body">
@@ -62,32 +63,30 @@
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-     <script src='https://cdn.plot.ly/plotly-2.16.1.min.js'></script>
-     <script src='https://cdn.plot.ly/plotly-latest.min.js'></script> <!-- Plotly CDN -->
-     <script src="{{ url_for('static', filename='js/script.js') }}"></script> <!-- Local JS -->
-     <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
-     <script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/js/multi-select-tag.js"></script>
-    </body>
+    <script src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script> <!-- Latest Plotly.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/js/bootstrap-select.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script> <!-- Local JS -->
+    <script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag/dist/js/multi-select-tag.js"></script>
+    
     <script type='text/javascript'>
-      var bar = {{bar | safe}};
-      var pie = {{pie | safe}};
-      var line_graph = {{line | safe}};
-      var scatter_graph = {{scatter | safe}};
-      var heat_graph = {{heat | safe}};
-      var month_graph = {{month_bar | safe}};
-      var sun_graph = {{sun | safe}};
+        var bar = JSON.parse('{{bar | safe}}');
+        var pie = JSON.parse('{{pie | safe}}');
+        var line_graph = JSON.parse('{{line | safe}}');
+        var scatter_graph = JSON.parse('{{scatter | safe}}');
+        var heat_graph = JSON.parse('{{heat | safe}}');
+        var month_graph = JSON.parse('{{month_bar | safe}}');
+        var sun_graph = JSON.parse('{{sun | safe}}');
 
-<!--Plotly.plot('div_id',data,{});-->
-      Plotly.plot('pie',pie,{});
-      Plotly.plot('stack_bar',bar,{});
-      Plotly.plot('line',line_graph,{});
-      Plotly.plot('scatter',scatter_graph,{});
-      Plotly.plot('heat',heat_graph,{});
-      Plotly.plot('month_bar',month_graph,{});
-      Plotly.plot('sun',sun_graph,{});
-
+        if(pie && pie.data && pie.layout) Plotly.newPlot('pie', pie.data, pie.layout);
+        if(bar && bar.data && bar.layout) Plotly.newPlot('stack_bar', bar.data, bar.layout);
+        if(line_graph && line_graph.data && line_graph.layout) Plotly.newPlot('line', line_graph.data, line_graph.layout);
+        if(scatter_graph && scatter_graph.data && scatter_graph.layout) Plotly.newPlot('scatter', scatter_graph.data, scatter_graph.layout);
+        if(heat_graph && heat_graph.data && heat_graph.layout) Plotly.newPlot('heat', heat_graph.data, heat_graph.layout);
+        if(month_graph && month_graph.data && month_graph.layout) Plotly.newPlot('month_bar', month_graph.data, month_graph.layout);
+        if(sun_graph && sun_graph.data && sun_graph.layout) Plotly.newPlot('sun', sun_graph.data, sun_graph.layout);
     </script>
+</body>
 </html>
