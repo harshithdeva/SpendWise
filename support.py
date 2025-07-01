@@ -173,8 +173,6 @@ def generate_Graph(df=None):
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
         )
-        print("BAR DATA:")
-        print(bar_data)
         # Stacked Bar Chart
         s = df.groupby(["Note", "Expense"])[["Amount"]].sum().reset_index()
         stack = px.bar(
