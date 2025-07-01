@@ -7,13 +7,19 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
     <title>SpendWise - Profile</title>
     <style>
-        .gradient-header {
+        body {
             background: linear-gradient(to right, #007991, #78ffd6);
+            min-height: 100vh;
+        }
+        .gradient-header {
+            background-color: #0b2c38;
             color: white;
         }
-        .rounded {
-            background-color: #ffffff;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        .rounded-box {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 2rem;
         }
     </style>
 </head>
@@ -25,7 +31,7 @@
         <a class="text-white mx-2" href="/home">Home</a>
         <a class="text-white mx-2" href="/analysis">Analysis</a>
         <a class="text-white mx-2" href="/profile">Profile</a>
-        <a class="text-white mx-2" href="/contact">Contact Us</a>
+        <a class="text-white mx-2" href="/contact">Contact</a>
         <a class="btn btn-outline-light ml-3" href="/logout">Logout</a>
     </nav>
 </div>
@@ -40,25 +46,29 @@
 {% endfor %}
 
 <div class="container mt-5 mb-5">
-    <div class="row">
-        <div class="col-md-3 text-center">
-            <img class="rounded-circle mt-4" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
-            <h5 class="mt-3">{{ user_name }}</h5>
-            <p class="text-muted">{{ email }}</p>
-        </div>
-        <div class="col-md-6 offset-md-1">
-            <h4 class="mt-4 mb-3">Profile Settings</h4>
-            <form method="post" action="/updateprofile">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" class="form-control" name="name" value="{{ user_name }}" required>
+    <div class="row justify-content-center">
+        <div class="col-lg-8 rounded-box">
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <img class="rounded-circle mt-3" width="140px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg" alt="User">
+                    <h5 class="mt-3">{{ user_name }}</h5>
+                    <p class="text-muted">{{ email }}</p>
                 </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" class="form-control" name="email" value="{{ email }}" required>
+                <div class="col-md-8">
+                    <h4 class="mb-3">Profile Settings</h4>
+                    <form method="post" action="/updateprofile">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" class="form-control" name="name" value="{{ user_name }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" class="form-control" name="email" value="{{ email }}" required>
+                        </div>
+                        <input type="submit" class="btn btn-success btn-block" value="Save">
+                    </form>
                 </div>
-                <input type="submit" class="btn btn-success btn-block" value="Save">
-            </form>
+            </div>
         </div>
     </div>
 </div>
@@ -66,7 +76,6 @@
 <script>
     setTimeout(() => $('#alert').alert('close'), 3000);
 </script>
-
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"></script>
