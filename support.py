@@ -169,9 +169,19 @@ def generate_Graph(df=None):
         )
         bar.update(layout_showlegend=False)
         bar.update_layout(
-            margin=dict(l=2, r=2, t=40, b=2),
+            margin=dict(l=2, r=2, t=60, b=2),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
+        )
+        bar.update_xaxes(
+            title_text="Expense",
+            tickfont=dict(color="#222"),
+            title_font=dict(color="#222"),
+        )
+        bar.update_yaxes(
+            title_text="Amount",
+            tickfont=dict(color="#222"),
+            title_font=dict(color="#222"),
         )
         # Stacked Bar Chart
         s = df.groupby(["Note", "Expense"])[["Amount"]].sum().reset_index()
@@ -188,11 +198,20 @@ def generate_Graph(df=None):
         stack.update(layout_showlegend=False)
         stack.update_xaxes(tickangle=45)
         stack.update_layout(
-            margin=dict(l=2, r=2, t=30, b=2),
+            margin=dict(l=2, r=2, t=60, b=2),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
         )
-
+        stack.update_xaxes(
+            title_text="Note",
+            tickfont=dict(color="#222"),
+            title_font=dict(color="#222"),
+        )
+        stack.update_yaxes(
+            title_text="Amount",
+            tickfont=dict(color="#222"),
+            title_font=dict(color="#222"),
+        )
         # Line Chart
         line = px.line(
             df, x="Date", y="Amount", color="Expense", template="plotly_dark"
@@ -241,12 +260,23 @@ def makePieChart(
     names="Note",
     values="Amount",
     hole=0.5,
-    color_discrete_sequence=px.colors.sequential.RdBu,
+    color_discrete_sequence=None,
     size=300,
     textposition="inside",
     textinfo="percent+label",
     margin=2,
 ):
+    # Use a vibrant, contrasting Material palette by default
+    if color_discrete_sequence is None:
+        color_discrete_sequence = [
+            "#42a5f5",  # blue
+            "#66bb6a",  # green
+            "#ffa726",  # orange
+            "#ab47bc",  # purple
+            "#ef5350",  # red
+            "#26c6da",  # teal
+        ]
+
     try:
         dff = df[df["Expense"] == expense]
         if dff.empty or names not in dff.columns or values not in dff.columns:
@@ -261,22 +291,27 @@ def makePieChart(
             height=size,
             width=size,
         )
-        fig.update_traces(textposition=textposition, textinfo=textinfo)
+        fig.update_traces(
+            textposition=textposition,
+            textinfo=textinfo,
+            textfont_size=14,
+            marker=dict(line=dict(color="#fff", width=2)),
+        )
         fig.update_layout(
+            margin=dict(l=margin, r=margin, t=margin, b=margin),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            showlegend=False,
             annotations=[
                 dict(
                     text=expense,
                     y=0.5,
-                    font_size=20,
-                    font_color="white",
+                    font_size=16,
+                    font_color="#0b2c38",
                     showarrow=False,
                 )
             ],
-            margin=dict(l=margin, r=margin, t=margin, b=margin),
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
         )
-        fig.update(layout_showlegend=False)
         return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
     except Exception as e:
