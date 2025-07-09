@@ -207,18 +207,7 @@
         </div>
     {% endfor %}
 
-    <!-- Main content conditional rendering -->
-    {% if df_size == 0 %}
-        <div class="container">
-            <div class="row mt-5">
-                <div class="col-12 text-center">
-                    <h3>No records found, seems you are a new user</h3>
-                </div>
-            </div>
-        </div>
-    {% else %}
-        <!-- Main container-->
-        <div class="container">
+    <div class="container">
             <!-- Tiles row-->
             <div class="row my-2">
                 <div class="col-md-3">
@@ -355,7 +344,20 @@
                     </div>
                 </div>
             </div>
+        </div>
 
+    <!-- Main content conditional rendering -->
+    {% if df_size == 0 %}
+        <div class="container">
+            <div class="row mt-5">
+                <div class="col-12 text-center">
+                    <h3>Please Add your Records to generate the Graphs</h3>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Main container-->
+        <div class="container">
             <!-- Bar Charts Row -->
             <div class="row mt-4">
                 <div class="col-md-6 mb-4">
@@ -508,7 +510,7 @@
                 <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
                     <svg class="bi" width="30" height="24"><use xlink:href="#bootstrap"/></svg>
                 </a>
-                <span class="text-muted">&copy; 2022 Expense Tracker, Inc</span>
+                <span class="text-muted">&copy; 2025 SpendWise | All rights reserved</span>
             </div>
         </footer>
     </div>
