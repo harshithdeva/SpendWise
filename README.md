@@ -1,29 +1,30 @@
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/40932902/211549885-ce3b5578-bbfa-401a-8d78-944d91d588b1.png">
-    <h1 align="center">Flask Expense Tracker WebApp</h1>
- 
+  <img src="Images/Logo.png" alt="SpendWise Logo" width="200"/>
+</p>
+<h1 align="center">💰 SpendWise</h1>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Flask-2.2-blue">
+  <img src="https://img.shields.io/badge/Plotly-6.1-blue">
+  <img src="https://img.shields.io/badge/SQLite-lightgrey">
+  <img src="https://img.shields.io/badge/Built%20with-Python%203.13-blue">
 </p>
 
 <p align="center">
-    <a href="https://expensestrackerapp-ysma7ol4bq-em.a.run.app/">View Demo</a>
-    ·
-    <a href="https://github.com/santos-k/Flask_Expense_App/issues/new/choose">Report Bug</a>
-    ·
-    <a href="https://github.com/anuraghazra/Flask_Expense_App/issues/new/choose">Request Feature</a>
-    ·
-    <a href="https://github.com/anuraghazra/Flask_Expense_App/discussions">Ask Question</a>
-  </p>
-
-<p align="center">
-  <a href="https://www.python.org/downloads/release/python-310/"><img src="http://ForTheBadge.com/images/badges/made-with-python.svg"></a>
+  A clean, interactive, and user-friendly personal finance tracker built with Flask and Plotly.
+  <br><br>
+  Track income, expenses, savings, and investments — all in one place.
 </p>
 
 <p align="center">
-    <img src="https://img.shields.io/badge/Flask-2.2-blue">
-    <img src="https://img.shields.io/badge/Plotly-5.11-blue">
-    <img src="https://img.shields.io/github/repo-size/santos-k/Flask_Expense_App?logo=github">
-    <img src="https://img.shields.io/bower/l/flask">
+  <a href="#features">Features</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#screenshots">Screenshots</a> •
+  <a href="#contributing">Contributing</a> •
+  <a href="#license">License</a>
 </p>
+
 
 ## Overview
 Introducing Expense Tracker, a powerful expense tracking web application built on Flask. This comprehensive tool is designed
