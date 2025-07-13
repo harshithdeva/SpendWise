@@ -7,6 +7,7 @@ from flask_login import (
     current_user,
     UserMixin,
 )
+from flask_wtf import CSRFProtect
 import os
 from datetime import timedelta  # used for setting session timeout
 import pandas as pd
@@ -19,12 +20,13 @@ import support
 warnings.filterwarnings("ignore")
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=20)  # Set session lifetime
+app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY")
 # Initialize Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"  # Name of your login route
+csrf = CSRFProtect(app)
 
 
 class User(UserMixin):
@@ -155,11 +157,15 @@ def home():
     query = "select * from user_login where user_id = ?"
     userdata = support.execute_query("search", query, (user_id,))
     page = int(request.args.get("page", 1))
-    per_page = int(request.args.get("per_page", 5))  # Get per_page from query, default 5
+    per_page = int(
+        request.args.get("per_page", 5)
+    )  # Get per_page from query, default 5
     offset = (page - 1) * per_page
 
     table_query = "SELECT * FROM user_expenses WHERE user_id = ? ORDER BY pdate DESC LIMIT ? OFFSET ?"
-    table_data = support.execute_query("search", table_query, (user_id, per_page, offset))
+    table_data = support.execute_query(
+        "search", table_query, (user_id, per_page, offset)
+    )
 
     count_query = "SELECT COUNT(*) FROM user_expenses WHERE user_id = ?"
     total_count = support.execute_query("search", count_query, (user_id,))[0][0]
@@ -251,6 +257,7 @@ def add_expense():
             return redirect("/home")
         return redirect("/home")
 
+
 @app.route("/api/expense/delete/<int:expense_id>", methods=["POST"])
 @login_required
 def api_delete_expense(expense_id):
@@ -264,7 +271,7 @@ def api_delete_expense(expense_id):
     query = "DELETE FROM user_expenses WHERE id=? AND user_id=?"
     support.execute_query("insert", query, (expense_id, current_user.id))
     return jsonify({"success": True, "message": "Expense deleted."}), 200
-    
+
 
 @app.route("/api/expense/edit/<int:expense_id>", methods=["POST"])
 @login_required
@@ -283,7 +290,10 @@ def api_edit_expense(expense_id):
         if amount <= 0:
             raise ValueError
     except (ValueError, TypeError):
-        return jsonify({"success": False, "message": "Amount must be a positive number."}), 400
+        return (
+            jsonify({"success": False, "message": "Amount must be a positive number."}),
+            400,
+        )
 
     # Check if expense exists for this user
     query_check = "SELECT id FROM user_expenses WHERE id=? AND user_id=?"
@@ -297,7 +307,9 @@ def api_edit_expense(expense_id):
         SET pdate=?, expense=?, amount=?, pdescription=?
         WHERE id=? AND user_id=?
     """
-    support.execute_query("insert", query, (date, expense, amount, note, expense_id, current_user.id))
+    support.execute_query(
+        "insert", query, (date, expense, amount, note, expense_id, current_user.id)
+    )
     return jsonify({"success": True, "message": "Expense updated."}), 200
 
 

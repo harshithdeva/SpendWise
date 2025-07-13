@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>SpendWise - Home</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -355,7 +356,8 @@
                                 Add New Expense Record
                             </div>
                             <div class="modal-body px-5">
-                                <form class="form" method="post" action="/home/add_expense" >
+                                <form class="form" method="POST" action="/home/add_expense" >
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <input type="date" class="form-control my-1" id="e_date" name="e_date" placeholder="Select Date" required>
                                     <select class="form-control my-1" name="e_type" required>
                                         <option selected hidden value="None">Expense type...</option>
@@ -633,8 +635,13 @@
     <script>
         function confirmDelete(expenseId) {
             if (confirm("Are you sure you want to delete this record?")) {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 fetch(`/api/expense/delete/${expenseId}`, {
-                    method: 'POST'
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': csrfToken
+                    }
                 }).then(response => {
                     if (response.ok) {
                         location.reload();
@@ -663,10 +670,12 @@
                 amount: document.getElementById('editAmount').value,
                 note: document.getElementById('editNote').value
             };
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             fetch(`/api/expense/edit/${expenseId}`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
                 },
                 body: JSON.stringify(data)
             }).then(response => {
