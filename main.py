@@ -154,9 +154,17 @@ def home():
     user_id = current_user.id
     query = "select * from user_login where user_id = ?"
     userdata = support.execute_query("search", query, (user_id,))
+    page = int(request.args.get("page", 1))
+    per_page = int(request.args.get("per_page", 5))  # Get per_page from query, default 5
+    offset = (page - 1) * per_page
 
-    table_query = "select * from user_expenses where user_id = ? order by pdate desc"
-    table_data = support.execute_query("search", table_query, (user_id,))
+    table_query = "SELECT * FROM user_expenses WHERE user_id = ? ORDER BY pdate DESC LIMIT ? OFFSET ?"
+    table_data = support.execute_query("search", table_query, (user_id, per_page, offset))
+
+    count_query = "SELECT COUNT(*) FROM user_expenses WHERE user_id = ?"
+    total_count = support.execute_query("search", count_query, (user_id,))[0][0]
+    total_pages = (total_count + per_page - 1) // per_page
+
     df = pd.DataFrame(
         table_data, columns=["#", "User_Id", "Date", "Expense", "Amount", "Note"]
     )
@@ -198,6 +206,10 @@ def home():
     return render_template(
         "home.html",
         user_name=userdata[0][1],
+        table_data=table_data,
+        page=page,
+        total_pages=total_pages,
+        per_page=per_page,
         df_size=df.shape[0],
         df=jsonify(df.to_json()),
         earning=earning,
@@ -207,7 +219,6 @@ def home():
         monthly_data=monthly_data,
         card_data=card_data,
         goals=goals,
-        table_data=table_data[:4],
         bar=bar,
         line=line,
         stack_bar=stack_bar,
@@ -239,6 +250,55 @@ def add_expense():
             flash("Something went wrong.")
             return redirect("/home")
         return redirect("/home")
+
+@app.route("/api/expense/delete/<int:expense_id>", methods=["POST"])
+@login_required
+def api_delete_expense(expense_id):
+    # Check if expense exists for this user
+    query_check = "SELECT id FROM user_expenses WHERE id=? AND user_id=?"
+    result = support.execute_query("search", query_check, (expense_id, current_user.id))
+    if not result:
+        return jsonify({"success": False, "message": "Expense not found."}), 404
+
+    # Proceed to delete
+    query = "DELETE FROM user_expenses WHERE id=? AND user_id=?"
+    support.execute_query("insert", query, (expense_id, current_user.id))
+    return jsonify({"success": True, "message": "Expense deleted."}), 200
+    
+
+@app.route("/api/expense/edit/<int:expense_id>", methods=["POST"])
+@login_required
+def api_edit_expense(expense_id):
+    data = request.get_json()
+    date = data.get("date")
+    expense = data.get("expense")
+    amount = data.get("amount")
+    note = data.get("note")
+
+    # Validate required fields
+    if not date or not expense or not amount:
+        return jsonify({"success": False, "message": "Missing required fields."}), 400
+    try:
+        amount = float(amount)
+        if amount <= 0:
+            raise ValueError
+    except (ValueError, TypeError):
+        return jsonify({"success": False, "message": "Amount must be a positive number."}), 400
+
+    # Check if expense exists for this user
+    query_check = "SELECT id FROM user_expenses WHERE id=? AND user_id=?"
+    result = support.execute_query("search", query_check, (expense_id, current_user.id))
+    if not result:
+        return jsonify({"success": False, "message": "Expense not found."}), 404
+
+    # Proceed to update
+    query = """
+        UPDATE user_expenses
+        SET pdate=?, expense=?, amount=?, pdescription=?
+        WHERE id=? AND user_id=?
+    """
+    support.execute_query("insert", query, (date, expense, amount, note, expense_id, current_user.id))
+    return jsonify({"success": True, "message": "Expense updated."}), 200
 
 
 @app.route("/analysis")
