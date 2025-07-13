@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <a href="#features">Overview</a> •
+  <a href="#overview">Overview</a> •
   <a href="#installation">Installation</a> •
   <a href="#features">Features</a> •
   <a href="#usage">Usage</a> •
@@ -25,7 +25,7 @@
 </p>
 
 
-## 🧭 Overview
+## Overview
 
 **SpendWise** is a clean and modern personal finance tracker built with Flask.  
 It empowers you to **track income, expenses, savings, and investments** in a visually intuitive dashboard using Plotly charts.
@@ -39,7 +39,7 @@ Whether you're trying to manage your monthly budget, plan savings, or analyze yo
 - Plan budgets and spot overspending patterns
 
 ## Prerequisites
-To fully utilize the features and capabilities of Spendwise, users must have the following prerequisites installed on their system:
+To fully utilize the features and capabilities of SpendWise, users must have the following prerequisites installed on their system:
 
 1. Python 3.13 or higher
 2. Flask web framework
@@ -159,7 +159,7 @@ New users can quickly register on **SpendWise** to begin tracking their finances
 - If the email already exists:
   - An alert informs the user to log in instead.
 - Users cannot access the register page once logged in (session-based restriction).
-- Navigation to **Login** or **Contact** page is available for further support.
+- Users can also navigate to the  **Login** or **Contact** pagee for further support.
 
 > ✅ This ensures only unique accounts are created and simplifies onboarding.
 
@@ -232,7 +232,7 @@ New users can quickly register on **SpendWise** to begin tracking their finances
 
 
 ## License
-Expense App is open-sourced under the MIT license.
+SpendWise is open-sourced under the MIT license.
 
 ## ✅ Conclusion
 
