@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Images/Logo.png" alt="SpendWise Logo" width="200"/>
+  <img src="images/Logo.png" alt="SpendWise Logo" width="300" height="300"/>
 </p>
 <h1 align="center">💰 SpendWise</h1>
 
@@ -26,26 +26,30 @@
 </p>
 
 
-## Overview
-Introducing Expense Tracker, a powerful expense tracking web application built on Flask. This comprehensive tool is designed
-to assist users in effectively managing their financial transactions, including earnings, expenses, investments, and savings.
-With Expense App, users can easily record, track and categorize their expenses, providing them with valuable insights into their spending habits. 
-Additionally, the application features advanced analysis and visualization tools, which allow users to gain a deeper understanding of 
-their financial data and make more informed financial decisions. 
-Whether you're a professional or an individual, Expense Tracker is the perfect solution for managing your finances 
-and reaching your financial goals.
+## 🧭 Overview
+
+**SpendWise** is a clean and modern personal finance tracker built with Flask.  
+It empowers you to **track income, expenses, savings, and investments** in a visually intuitive dashboard using Plotly charts.
+
+Whether you're trying to manage your monthly budget, plan savings, or analyze your financial habits—SpendWise provides an elegant and interactive platform to do it all.
+
+🎯 Key Use Cases:
+- Record and categorize daily transactions
+- Visualize financial health with charts
+- Analyze earning, spending, and saving trends
+- Plan budgets and spot overspending patterns
 
 ## Prerequisites
-To fully utilize the features and capabilities of Expense App, users must have the following prerequisites installed on their system:
+To fully utilize the features and capabilities of Spendwise, users must have the following prerequisites installed on their system:
 
-1. Python 3.6 or higher
+1. Python 3.13 or higher
 2. Flask web framework
 3. Plotly for data visualization
 4. Pandas for data manipulation
 5. Basic understanding of HTML, CSS, and JavaScript for designing the front-end interface.
 
 With these tools and technologies, users will be able to run the application and access its 
-powerful expense tracking, analysis and visualization features. It also allows the user to customize the front-end interface as per the requirement. 
+powerful expense tracking, analysis and visualization features.
 
 
 ## Project File Structure
@@ -69,7 +73,7 @@ powerful expense tracking, analysis and visualization features. It also allows t
     ```
 
 ## Installation
-1. Clone the repository: `git clone https://github.com/santos-k/Flask_Expense_App`
+1. Clone the repository: `git clone https://github.com/harshithdeva/Spendwise.git`
 2. Install the required packages: `pip install -r requirements.txt`
 3. Run the application: `python main.py`
 
@@ -209,12 +213,6 @@ This can also help to reduce the risk of session hijacking and ensures that only
 The time of inactivity can be configured as per the requirement, but the default settings is 5 minutes. 
 The user also will be prompted with a message before session termination so that he can save any unsaved data.
 
-## Deployment on Google Cloud(GCP)
-- Follow the step by step deployment [process](https://github.com/santos-k/Notes/blob/main/Deploy_Portfolio_on_GCP.md)
-
-
-## Contributing
-We welcome contributions to Expense App! If you would like to contribute.
 
 ## License
 Expense App is open-sourced under the MIT license.

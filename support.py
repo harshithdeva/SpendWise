@@ -579,7 +579,7 @@ def meraPie(
         values=values,
         color=color,
         hole=hole,
-        width=340,   
+        width=340,
         height=340,
         color_discrete_sequence=[
             "#42a5f5",
@@ -764,7 +764,12 @@ def meraScatter(
         height=height,
         width=width,
         color_discrete_sequence=[
-            "#42a5f5", "#66bb6a", "#ffa726", "#ab47bc", "#ef5350", "#26c6da"
+            "#42a5f5",
+            "#66bb6a",
+            "#ffa726",
+            "#ab47bc",
+            "#ef5350",
+            "#26c6da",
         ],
     )
     scatter.update_xaxes(rangeslider_visible=slider)
@@ -772,7 +777,14 @@ def meraScatter(
     scatter.update_layout(
         title_text=title,
         title_x=0.5,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=1, font=dict(color="#0b2c38")),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="left",
+            x=1,
+            font=dict(color="#0b2c38"),
+        ),
         margin=dict(l=2, r=2, t=2, b=2),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
@@ -842,10 +854,20 @@ def month_bar(df=None, height=None, width=None):
     t = df.groupby(["Month", "Expense"])["Amount"].sum().reset_index()
 
     month = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December",
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
     ]
-    m = {i+1: name for i, name in enumerate(month)}
+    m = {i + 1: name for i, name in enumerate(month)}
     t["Month"] = t["Month"].apply(lambda x: m[x])
 
     fig = px.bar(
@@ -857,11 +879,23 @@ def month_bar(df=None, height=None, width=None):
         height=height,
         width=width,
         color_discrete_sequence=[
-            "#42a5f5", "#66bb6a", "#ffa726", "#ab47bc", "#ef5350", "#26c6da"
+            "#42a5f5",
+            "#66bb6a",
+            "#ffa726",
+            "#ab47bc",
+            "#ef5350",
+            "#26c6da",
         ],
     )
     fig.update_layout(
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color="#0b2c38")),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            font=dict(color="#0b2c38"),
+        ),
         margin=dict(l=2, r=2, t=30, b=2),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
@@ -888,7 +922,12 @@ def meraSunburst(df=None, height=None, width=None):
         height=height,
         width=width,
         color_discrete_sequence=[
-            "#42a5f5", "#66bb6a", "#ffa726", "#ab47bc", "#ef5350", "#26c6da"
+            "#42a5f5",
+            "#66bb6a",
+            "#ffa726",
+            "#ab47bc",
+            "#ef5350",
+            "#26c6da",
         ],
     )
     fig.update_layout(

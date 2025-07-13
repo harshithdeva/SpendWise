@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash, jsonify
+from flask import Flask, render_template, request, redirect, flash, jsonify, session
 from flask_login import (
     LoginManager,
     login_required,
@@ -7,7 +7,6 @@ from flask_login import (
     current_user,
     UserMixin,
 )
-from flask_session import Session  # for session management
 import os
 from datetime import timedelta  # used for setting session timeout
 import pandas as pd
@@ -21,6 +20,7 @@ warnings.filterwarnings("ignore")
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=20)  # Set session lifetime
 # Initialize Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -61,6 +61,7 @@ def login_validation():
         if len(users) > 0:
             user_obj = User(id=users[0][0], username=users[0][1], email=users[0][2])
             login_user(user_obj)
+            session.permanent = True
             flash("Successfully logged in!")
             return redirect("/home")
         else:
