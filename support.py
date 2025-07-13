@@ -319,55 +319,6 @@ def makePieChart(
         return None
 
 
-def meraBarChart(
-    df=None,
-    x=None,
-    y=None,
-    color=None,
-    x_label=None,
-    y_label=None,
-    height=None,
-    width=None,
-    show_legend=False,
-    show_xtick=True,
-    show_ytick=True,
-    x_tickangle=0,
-    y_tickangle=0,
-    barmode="relative",
-):
-    if df is None or df.empty or x not in df.columns or y not in df.columns:
-        return None
-
-    try:
-        bar = px.bar(
-            data_frame=df,
-            x=x,
-            y=y,
-            color=color,
-            template="plotly_dark",
-            barmode=barmode,
-            labels={x: x_label or x, y: y_label or y},
-            height=height,
-            width=width,
-        )
-        bar.update(layout_showlegend=show_legend)
-        bar.update_layout(
-            margin=dict(l=2, r=2, t=2, b=2),
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
-        )
-        bar.update_layout(
-            xaxis=dict(showticklabels=show_xtick, tickangle=x_tickangle),
-            yaxis=dict(showticklabels=show_ytick, tickangle=y_tickangle),
-        )
-
-        return json.dumps(bar, cls=plotly.utils.PlotlyJSONEncoder)
-
-    except Exception as e:
-        print("⚠️ meraBarChart failed:", e)
-        return None
-
-
 def get_monthly_data(df, year=datetime.datetime.today().year, res="int"):
     """
     Prepare last 3 months of categorized expense data.
@@ -608,6 +559,8 @@ def expense_goal(df):
 
 
 # --------------- Analysis -----------------
+
+
 def meraPie(
     df=None,
     names=None,
@@ -626,19 +579,109 @@ def meraPie(
         values=values,
         color=color,
         hole=hole,
-        width=width,
-        height=height,
+        width=340,   
+        height=340,
+        color_discrete_sequence=[
+            "#42a5f5",
+            "#66bb6a",
+            "#ffa726",
+            "#ab47bc",
+            "#ef5350",
+            "#26c6da",
+        ],
     )
-    fig.update_traces(textposition="inside", textinfo="percent+label")
+    fig.update_traces(
+        textposition="inside",
+        textinfo="percent+label",
+        textfont_size=14,
+        marker=dict(line=dict(color="#fff", width=2)),
+    )
     fig.update_layout(
-        annotations=[dict(text=hole_text, y=0.5, font_size=hole_font, showarrow=False)]
+        annotations=[
+            dict(
+                text=hole_text,
+                y=0.5,
+                font_size=hole_font,
+                font_color="#0b2c38",
+                showarrow=False,
+            )
+        ],
+        margin=dict(l=0, r=0, t=0, b=0),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font_color="#0b2c38",
+        showlegend=False,
     )
-    fig.update_layout(
-        margin=margin, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)"
-    )
-    fig.update(layout_showlegend=False)
-    # fig.update_layout(title='Total Balance', title_font_size=15, title_font_color='green')
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+
+def meraBarChart(
+    df=None,
+    x=None,
+    y=None,
+    color=None,
+    x_label=None,
+    y_label=None,
+    height=None,
+    width=None,
+    show_legend=False,
+    show_xtick=True,
+    show_ytick=True,
+    x_tickangle=0,
+    y_tickangle=0,
+    barmode="relative",
+):
+    if df is None or df.empty or x not in df.columns or y not in df.columns:
+        return None
+
+    try:
+        bar = px.bar(
+            data_frame=df,
+            x=x,
+            y=y,
+            color=color,
+            barmode=barmode,
+            labels={x: x_label or x, y: y_label or y},
+            height=height,
+            width=width,
+            color_discrete_sequence=[
+                "#42a5f5",
+                "#66bb6a",
+                "#ffa726",
+                "#ab47bc",
+                "#ef5350",
+                "#26c6da",
+            ],
+        )
+        bar.update(layout_showlegend=show_legend)
+        bar.update_layout(
+            margin=dict(l=2, r=2, t=2, b=2),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font_color="#0b2c38",
+        )
+        bar.update_layout(
+            xaxis=dict(
+                showticklabels=show_xtick,
+                tickangle=x_tickangle,
+                title_font=dict(color="#0b2c38"),
+                tickfont=dict(color="#0b2c38"),
+                gridcolor="rgba(0,0,0,0.08)",
+            ),
+            yaxis=dict(
+                showticklabels=show_ytick,
+                tickangle=y_tickangle,
+                title_font=dict(color="#0b2c38"),
+                tickfont=dict(color="#0b2c38"),
+                gridcolor="rgba(0,0,0,0.08)",
+            ),
+        )
+
+        return json.dumps(bar, cls=plotly.utils.PlotlyJSONEncoder)
+
+    except Exception as e:
+        print("⚠️ meraBarChart failed:", e)
+        return None
 
 
 def meraLine(
@@ -658,19 +701,44 @@ def meraLine(
         x=x,
         y=y,
         color=color,
-        template="plotly_dark",
         height=height,
         width=width,
+        color_discrete_sequence=[
+            "#42a5f5",
+            "#66bb6a",
+            "#ffa726",
+            "#ab47bc",
+            "#ef5350",
+            "#26c6da",
+        ],
     )
     line.update_xaxes(rangeslider_visible=slider)
     line.update(layout_showlegend=show_legend)
     line.update_layout(
         title_text=title,
         title_x=0.0,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            font=dict(color="#0b2c38"),
+        ),
         margin=dict(l=2, r=2, t=2, b=2),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
+        font_color="#0b2c38",
+    )
+    line.update_xaxes(
+        title_font=dict(color="#0b2c38"),
+        tickfont=dict(color="#0b2c38"),
+        gridcolor="rgba(0,0,0,0.08)",
+    )
+    line.update_yaxes(
+        title_font=dict(color="#0b2c38"),
+        tickfont=dict(color="#0b2c38"),
+        gridcolor="rgba(0,0,0,0.08)",
     )
     return json.dumps(line, cls=plotly.utils.PlotlyJSONEncoder)
 
@@ -693,20 +761,32 @@ def meraScatter(
         y=y,
         color=color,
         size=size,
-        template="plotly_dark",
         height=height,
         width=width,
+        color_discrete_sequence=[
+            "#42a5f5", "#66bb6a", "#ffa726", "#ab47bc", "#ef5350", "#26c6da"
+        ],
     )
     scatter.update_xaxes(rangeslider_visible=slider)
     scatter.update(layout_showlegend=legend)
-    scatter.update_layout(xaxis={"visible": False})
     scatter.update_layout(
         title_text=title,
         title_x=0.5,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=1),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=1, font=dict(color="#0b2c38")),
         margin=dict(l=2, r=2, t=2, b=2),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
+        font_color="#0b2c38",
+    )
+    scatter.update_xaxes(
+        title_font=dict(color="#0b2c38"),
+        tickfont=dict(color="#0b2c38"),
+        gridcolor="rgba(0,0,0,0.08)",
+    )
+    scatter.update_yaxes(
+        title_font=dict(color="#0b2c38"),
+        tickfont=dict(color="#0b2c38"),
+        gridcolor="rgba(0,0,0,0.08)",
     )
     return json.dumps(scatter, cls=plotly.utils.PlotlyJSONEncoder)
 
@@ -721,13 +801,11 @@ def meraHeatmap(
     width=None,
     title=None,
 ):
-    # Check if necessary columns exist and are not empty
     if df is None or x not in df.columns or y not in df.columns:
         return None
     if df[x].nunique() == 0 or df[y].nunique() == 0:
         return None
 
-    # Generate crosstab
     cross_data = pd.crosstab(df[x], df[y])
     if cross_data.empty:
         return None
@@ -738,18 +816,24 @@ def meraHeatmap(
         aspect=aspect,
         height=height,
         width=width,
-        template="plotly_dark",
+        color_continuous_scale="Plasma",
     )
     fig.update(layout_showlegend=False)
-    fig.update_layout(
-        xaxis=dict(showticklabels=False), yaxis=dict(showticklabels=False)
-    )
     fig.update_layout(
         title_text=title,
         title_x=0.5,
         margin=dict(l=2, r=2, t=30, b=2),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
+        font_color="#0b2c38",
+    )
+    fig.update_xaxes(
+        title_font=dict(color="#0b2c38"),
+        tickfont=dict(color="#0b2c38"),
+    )
+    fig.update_yaxes(
+        title_font=dict(color="#0b2c38"),
+        tickfont=dict(color="#0b2c38"),
     )
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
@@ -758,25 +842,10 @@ def month_bar(df=None, height=None, width=None):
     t = df.groupby(["Month", "Expense"])["Amount"].sum().reset_index()
 
     month = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December",
     ]
-    m = {}
-    count = 1
-    for i in month:
-        m[count] = i
-        count += 1
-
+    m = {i+1: name for i, name in enumerate(month)}
     t["Month"] = t["Month"].apply(lambda x: m[x])
 
     fig = px.bar(
@@ -787,15 +856,26 @@ def month_bar(df=None, height=None, width=None):
         text_auto=True,
         height=height,
         width=width,
-        template="plotly_dark",
+        color_discrete_sequence=[
+            "#42a5f5", "#66bb6a", "#ffa726", "#ab47bc", "#ef5350", "#26c6da"
+        ],
     )
     fig.update_layout(
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-    )
-    fig.update_layout(
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(color="#0b2c38")),
         margin=dict(l=2, r=2, t=30, b=2),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
+        font_color="#0b2c38",
+    )
+    fig.update_xaxes(
+        title_font=dict(color="#0b2c38"),
+        tickfont=dict(color="#0b2c38"),
+        gridcolor="rgba(0,0,0,0.08)",
+    )
+    fig.update_yaxes(
+        title_font=dict(color="#0b2c38"),
+        tickfont=dict(color="#0b2c38"),
+        gridcolor="rgba(0,0,0,0.08)",
     )
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
@@ -807,11 +887,15 @@ def meraSunburst(df=None, height=None, width=None):
         values="Amount",
         height=height,
         width=width,
+        color_discrete_sequence=[
+            "#42a5f5", "#66bb6a", "#ffa726", "#ab47bc", "#ef5350", "#26c6da"
+        ],
     )
     fig.update_layout(
         margin=dict(l=1, r=1, t=1, b=1),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
+        font_color="#0b2c38",
     )
     fig.update(layout_showlegend=False)
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
