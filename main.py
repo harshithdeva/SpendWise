@@ -180,8 +180,14 @@ def home():
     total_count = support.execute_query("search", count_query, (user_id,))[0][0]
     total_pages = (total_count + per_page - 1) // per_page
 
+    # Calling a full query to build the DataFrame and charts
+    full_table_query = (
+        "SELECT * FROM user_expenses WHERE user_id = ? ORDER BY pdate DESC"
+    )
+    full_table_data = support.execute_query("search", full_table_query, (user_id,))
+
     df = pd.DataFrame(
-        table_data, columns=["#", "User_Id", "Date", "Expense", "Amount", "Note"]
+        full_table_data, columns=["#", "User_Id", "Date", "Expense", "Amount", "Note"]
     )
 
     df = support.generate_df(df)
