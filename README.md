@@ -124,7 +124,7 @@ The login page acts as the entry point to **SpendWise** and includes:
   Users can access the **Register** or **About** page from here.
 
 <p align="center">
-  <img src="images/img1.png" alt="SpendWise Login Page" width="600"/>
+  <img src="images/Img1.png" alt="SpendWise Login Page" width="600"/>
 </p>
 
     
@@ -143,7 +143,7 @@ If users forget their password, **SpendWise** offers a secure and simple way to 
 > ⚠️ *Note: Password reset does not perform email verification. Anyone with a known email address could potentially reset it.*
 
 <p align="center">
-  <img src="images/img2.png" alt="SpendWise Forgot Password Page" width="600"/>
+  <img src="images/Img2.png" alt="SpendWise Forgot Password Page" width="600"/>
 </p>
 
 The login page will be the gatekeeper to the webapp and responsible for securing the app by allowing access only to authorized users. With the inclusion of these features, the login page will provide a convenient, secure, and user-friendly experience for all users.
@@ -164,7 +164,7 @@ New users can quickly register on **SpendWise** to begin tracking their finances
 > ✅ This ensures only unique accounts are created and simplifies onboarding.
 
 <p align="center">
-  <img src="images/img3.png" alt="SpendWise Register Page" width="600"/>
+  <img src="images/Img3.png" alt="SpendWise Register Page" width="600"/>
 </p>
 
 
@@ -180,11 +180,11 @@ New users can quickly register on **SpendWise** to begin tracking their finances
 - This page serves as the control center for your personal finance tracking and updates in real-time.
 
 <p align="center">
-  <img src="images/img4.png" alt="SpendWise Home Page" width="600"/>
-  <img src="images/img5.png" alt="SpendWise Home Page" width="600"/>
-  <img src="images/img6.png" alt="SpendWise Home Page" width="600"/>
-  <img src="images/img7.png" alt="SpendWise Home Page" width="600"/>
-  <img src="images/img8.png" alt="SpendWise Home Page" width="600"/>
+  <img src="images/Img4.png" alt="SpendWise Home Page" width="600"/>
+  <img src="images/Img5.png" alt="SpendWise Home Page" width="600"/>
+  <img src="images/Img6.png" alt="SpendWise Home Page" width="600"/>
+  <img src="images/Img7.png" alt="SpendWise Home Page" width="600"/>
+  <img src="images/Img8.png" alt="SpendWise Home Page" width="600"/>
 </p>
 
 
@@ -204,8 +204,8 @@ New users can quickly register on **SpendWise** to begin tracking their finances
 > 🔒 **Note:** Only accessible when logged in. All visualizations are personalized for the logged-in user.
 
 <p align="center">
-  <img src="images/img9.png" alt="SpendWise Analysis Page" width="600"/>
-  <img src="images/img10.png" alt="SpendWise Analysis Page" width="600"/>
+  <img src="images/Img9.png" alt="SpendWise Analysis Page" width="600"/>
+  <img src="images/Img10.png" alt="SpendWise Analysis Page" width="600"/>
 </p>
 
 ### 👤 Profile Page
@@ -215,7 +215,7 @@ New users can quickly register on **SpendWise** to begin tracking their finances
 - Includes password update functionality with proper validation.
 - Only accessible to the **logged-in user**.
 <p align="center">
-  <img src="images/img11.png" alt="SpendWise Profile Page" width="600"/>
+  <img src="images/Img11.png" alt="SpendWise Profile Page" width="600"/>
 </p>
 
 ---
@@ -227,7 +227,7 @@ New users can quickly register on **SpendWise** to begin tracking their finances
 - Includes fields for **name, email, phone**, and **message**.
 
 <p align="center">
-  <img src="images/img12.png" alt="SpendWise Contact Page" width="600"/>
+  <img src="images/Img12.png" alt="SpendWise Contact Page" width="600"/>
 </p>
 
 
