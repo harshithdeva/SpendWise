@@ -105,8 +105,12 @@ powerful expense tracking, analysis and visualization features.
 ### ✅ Modern, Responsive Dashboard  
 Enjoy a visually appealing interface with glassmorphism-inspired cards, subtle backgrounds, and a consistent color scheme across all charts and panels.
 
-### 🔒 Secure Authentication  
-Robust login and registration system with secure password management. Sessions automatically expire after 20 minutes of inactivity, with a user prompt before termination to ensure data safety.
+### 🔐 Secure Authentication  
+Robust login and registration system with secure password management.  
+
+- Passwords are **hashed using Werkzeug's security module** before being stored in the database.  
+- Sessions automatically expire after **20 minutes of inactivity**, with a user prompt before termination to ensure data safety.  
+
 
 ### 🛡️ CSRF Protection  
 All forms and delete operations are secured using CSRF tokens. The app includes CSRF protection headers for AJAX requests to prevent cross-site request forgery attacks.

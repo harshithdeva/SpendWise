@@ -1,3 +1,4 @@
+import email
 from flask import Flask, render_template, request, redirect, flash, jsonify, session
 from flask_login import (
     LoginManager,
@@ -16,6 +17,7 @@ import plotly.express as px
 import json
 import warnings
 import support
+from werkzeug.security import generate_password_hash, check_password_hash
 
 warnings.filterwarnings("ignore")
 
@@ -58,14 +60,19 @@ def login_validation():
     if not current_user.is_authenticated:
         email = request.form.get("email")
         passwd = request.form.get("password")
-        query = "SELECT * FROM user_login WHERE email = ? AND password = ?"
-        users = support.execute_query("search", query, (email, passwd))
-        if len(users) > 0:
+        query = "SELECT * FROM user_login WHERE email = ?"
+        users = support.execute_query("search", query, (email,))
+        if users:
             user_obj = User(id=users[0][0], username=users[0][1], email=users[0][2])
-            login_user(user_obj)
-            session.permanent = True
-            flash("Successfully logged in!")
-            return redirect("/home")
+            hashed_password = users[0][3]
+            if check_password_hash(hashed_password, passwd):
+                login_user(user_obj)
+                session.permanent = True
+                flash("Successfully logged in!")
+                return redirect("/home")
+            else:
+                flash("Invalid email and password!")
+                return redirect("/")
         else:
             flash("Invalid email and password!")
             return redirect("/")
@@ -78,13 +85,14 @@ def login_validation():
 def reset():
     email = request.form.get("femail")
     pswd = request.form.get("pswd")
+    hashed_password = generate_password_hash(pswd)
     userdata = support.execute_query(
         "search", "select * from user_login where email = ?", (email,)
     )
     if len(userdata) > 0:
         try:
             query = "update user_login set password = ? where email = ?"
-            support.execute_query("insert", query, (pswd, email))
+            support.execute_query("insert", query, (hashed_password, email))
             flash("Password has been changed!!")
             return redirect("/")
         except:
@@ -105,12 +113,13 @@ def registration():
     name = request.form.get("name")
     email = request.form.get("email")
     passwd = request.form.get("password")
+    hashed_password = generate_password_hash(passwd)
     if (
         len(name) > 5 and len(email) > 10 and len(passwd) > 5
     ):  # if input details satisfy length condition
         try:
             query = "INSERT INTO user_login(username, email, password) VALUES(?,?,?)"
-            support.execute_query("insert", query, (name, email, passwd))
+            support.execute_query("insert", query, (name, email, hashed_password))
 
             user = support.execute_query(
                 "search",
