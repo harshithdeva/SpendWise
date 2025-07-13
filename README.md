@@ -72,9 +72,33 @@ powerful expense tracking, analysis and visualization features.
     ```
 
 ## Installation
-1. Clone the repository: `git clone https://github.com/harshithdeva/Spendwise.git`
-2. Install the required packages: `pip install -r requirements.txt`
-3. Run the application: `python main.py`
+
+1. Clone the repository:  
+   ```bash
+   git clone https://github.com/harshithdeva/Spendwise.git
+   ```
+
+2. Install the required packages:  
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Set the environment variable for the Flask secret key:
+
+   **Linux/macOS**  
+   ```bash
+   export SECRET_KEY="your-secret-key"
+   ```
+
+   **Windows (PowerShell)**  
+   ```powershell
+   $env:SECRET_KEY="your-secret-key"
+   ```
+
+4. Run the application:  
+   ```bash
+   python main.py
+   ```
 
 ## Features
 
@@ -83,6 +107,10 @@ Enjoy a visually appealing interface with glassmorphism-inspired cards, subtle b
 
 ### 🔒 Secure Authentication  
 Robust login and registration system with secure password management. Sessions automatically expire after 20 minutes of inactivity, with a user prompt before termination to ensure data safety.
+
+### 🛡️ CSRF Protection  
+All forms and delete operations are secured using CSRF tokens. The app includes CSRF protection headers for AJAX requests to prevent cross-site request forgery attacks.
+
 
 ### 💼 Expense Overview & Quick Actions  
 The home page provides a financial summary, recent records, and interactive tiles for earnings, spending, investments, and savings. Easily add new records using a streamlined modal form.
@@ -141,6 +169,7 @@ If users forget their password, **SpendWise** offers a secure and simple way to 
 - This helps prevent account lockout while maintaining security.
 
 > ⚠️ *Note: Password reset does not perform email verification. Anyone with a known email address could potentially reset it.*
+> 🚧 *Upcoming: A secure password reset mechanism via email and email verification during registration are currently in development.*
 
 <p align="center">
   <img src="images/Img2.png" alt="SpendWise Forgot Password Page" width="600"/>
@@ -182,6 +211,8 @@ New users can quickly register on **SpendWise** to begin tracking their finances
 <p align="center">
   <img src="images/Img4.png" alt="SpendWise Home Page" width="600"/>
   <img src="images/Img5.png" alt="SpendWise Home Page" width="600"/>
+  <img src="images/Img13.png" alt="SpendWise Home Page" width="600"/>
+  <img src="images/Img14.png" alt="SpendWise Home Page" width="600"/>
   <img src="images/Img6.png" alt="SpendWise Home Page" width="600"/>
   <img src="images/Img7.png" alt="SpendWise Home Page" width="600"/>
   <img src="images/Img8.png" alt="SpendWise Home Page" width="600"/>
