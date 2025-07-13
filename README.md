@@ -53,7 +53,7 @@ powerful expense tracking, analysis and visualization features.
 
 ## Project File Structure
     ```
-    myproject/
+    SpendWise/
         main.py
         support.py
         requirements.txt
@@ -159,7 +159,7 @@ New users can quickly register on **SpendWise** to begin tracking their finances
 - If the email already exists:
   - An alert informs the user to log in instead.
 - Users cannot access the register page once logged in (session-based restriction).
-- Users can also navigate to the  **Login** or **Contact** pagee for further support.
+- Users can also navigate to the  **Login** or **Contact** page for further support.
 
 > ✅ This ensures only unique accounts are created and simplifies onboarding.
 
