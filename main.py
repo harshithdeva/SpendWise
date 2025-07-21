@@ -64,7 +64,7 @@ def load_user(user_id):
     return None
 
 
-def verify_recaptcha():
+def verify_recaptcha(expected_action="submit", min_score=0.5):
     if not RECAPTCHA_ENABLED:
         return True  # Skip verification if disabled
     recaptcha_response = request.form.get("g-recaptcha-response")
@@ -72,7 +72,13 @@ def verify_recaptcha():
     payload = {"secret": secret_key, "response": recaptcha_response}
     r = requests.post("https://www.google.com/recaptcha/api/siteverify", data=payload)
     result = r.json()
-    return result.get("success", False)
+    if not result.get("success"):
+        return False
+    if result.get("action") != expected_action:
+        return False
+    if result.get("score", 0) < min_score:
+        return False
+    return True
 
 
 @app.route("/")
@@ -86,7 +92,7 @@ def login():
 
 @app.route("/login_validation", methods=["POST"])
 def login_validation():
-    if not verify_recaptcha():
+    if not verify_recaptcha(expected_action="login", min_score=0.5):
         flash("reCAPTCHA verification failed. Please try again.")
         return redirect("/")
     if not current_user.is_authenticated:
@@ -147,7 +153,7 @@ def register():
 
 @app.route("/registration", methods=["POST"])
 def registration():
-    if not verify_recaptcha():
+    if not verify_recaptcha(expected_action="register", min_score=0.5):
         flash("reCAPTCHA verification failed. Please try again.")
         return redirect("/register")
     name = request.form.get("name")
