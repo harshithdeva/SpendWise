@@ -88,11 +88,18 @@ powerful expense tracking, analysis and visualization features.
    **Linux/macOS**  
    ```bash
    export SECRET_KEY="your-secret-key"
+   export RECAPTCHA_ENABLED=True
+   export RECAPTCHA_SITE_KEY="your-site-key"
+   export RECAPTCHA_SECRET_KEY="your-secret-key"
    ```
 
    **Windows (PowerShell)**  
    ```powershell
    $env:SECRET_KEY="your-secret-key"
+   $env:RECAPTCHA_ENABLED="True"
+   $env:RECAPTCHA_SITE_KEY="your-site-key"
+   $env:RECAPTCHA_SECRET_KEY="your-secret-key"
+
    ```
 
 4. Run the application:  
@@ -115,6 +122,8 @@ Robust login and registration system with secure password management.
 ### 🛡️ CSRF Protection  
 All forms and delete operations are secured using CSRF tokens. The app includes CSRF protection headers for AJAX requests to prevent cross-site request forgery attacks.
 
+### 🔐 Google reCAPTCHA v3 Integration  
+SpendWise implements Google reCAPTCHA v3 to prevent spam and malicious bot activity on the login, registration, and contact pages. This helps enhance the platform’s security and reliability.
 
 ### 💼 Expense Overview & Quick Actions  
 The home page provides a financial summary, recent records, and interactive tiles for earnings, spending, investments, and savings. Easily add new records using a streamlined modal form.
@@ -124,6 +133,9 @@ Visualize your finances with interactive charts — including pie, bar, line, su
 
 ### 📈 Detailed Analysis Page  
 Dive deeper into your financial data through a suite of advanced, responsive plots. Layouts are optimized for readability across screen sizes.
+
+### 🧾 Transaction Report Generator  
+Users can now generate and download a CSV report of their transactions for any custom date range directly from the dashboard. This allows for offline access, budgeting, or further analysis using spreadsheet tools.
 
 ### 👤 Profile Management  
 Update your name, email, and password from the profile page. All changes are securely validated and applied instantly.
@@ -241,6 +253,26 @@ New users can quickly register on **SpendWise** to begin tracking their finances
 <p align="center">
   <img src="images/Img9.png" alt="SpendWise Analysis Page" width="600"/>
   <img src="images/Img10.png" alt="SpendWise Analysis Page" width="600"/>
+</p>
+
+### 📄 Transactions Report Page
+
+- Generate a detailed **CSV report** of your transaction history by selecting a **start** and **end date**.
+- Upon submission, the system filters all transactions within the chosen range and prepares a clean, downloadable CSV file.
+- Each report includes:  
+  - Date of transaction  
+  - Category (Earning, Spend, Investment, Saving)  
+  - Sub-category (e.g., Rent, Salary, Mutual Funds)  
+  - Amount  
+  - Notes/description
+- Useful for **bookkeeping**, **monthly reviews**, or **financial summaries**.
+- The report is user-specific and accessible only to the logged-in user.
+- Ensures privacy and convenience by processing the data in-memory and triggering a download directly.
+
+> 🧾 *CSV reports help you analyze finances offline or share them easily with accountants, family, or budgeting tools.*
+
+<p align="center">
+  <img src="images/Img15.png" alt="SpendWise Transactions Report Page" width="600"/>
 </p>
 
 ### 👤 Profile Page
