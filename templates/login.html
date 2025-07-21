@@ -150,6 +150,10 @@
           </div>
           <a href="#" data-toggle="modal" data-target="#password_reset" class="footer-link">Forgot Password?</a>
         </div>
+        {% if recaptcha_enabled %}
+            <div class="g-recaptcha mb-3" data-sitekey="{{ recaptcha_site_key }}"></div>
+            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+        {% endif %}
 
         <button type="submit" class="btn btn-success btn-block">Login</button>
       </form>

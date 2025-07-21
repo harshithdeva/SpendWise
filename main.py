@@ -21,6 +21,7 @@ from flask_wtf import CSRFProtect
 import os
 import io
 import csv
+import requests
 from datetime import timedelta  # used for setting session timeout
 import pandas as pd
 import plotly
@@ -41,6 +42,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"  # Name of your login route
 csrf = CSRFProtect(app)
+RECAPTCHA_ENABLED = os.environ.get("RECAPTCHA_ENABLED", "1") == "1"
 
 
 class User(UserMixin):
@@ -62,13 +64,31 @@ def load_user(user_id):
     return None
 
 
+def verify_recaptcha():
+    if not RECAPTCHA_ENABLED:
+        return True  # Skip verification if disabled
+    recaptcha_response = request.form.get("g-recaptcha-response")
+    secret_key = os.environ.get("RECAPTCHA_SECRET_KEY")
+    payload = {"secret": secret_key, "response": recaptcha_response}
+    r = requests.post("https://www.google.com/recaptcha/api/siteverify", data=payload)
+    result = r.json()
+    return result.get("success", False)
+
+
 @app.route("/")
 def login():
-    return render_template("login.html")
+    site_key = os.environ.get("RECAPTCHA_SITE_KEY")
+    recaptcha_enabled = RECAPTCHA_ENABLED
+    return render_template(
+        "login.html", recaptcha_site_key=site_key, recaptcha_enabled=recaptcha_enabled
+    )
 
 
 @app.route("/login_validation", methods=["POST"])
 def login_validation():
+    if not verify_recaptcha():
+        flash("reCAPTCHA verification failed. Please try again.")
+        return redirect("/")
     if not current_user.is_authenticated:
         email = request.form.get("email")
         passwd = request.form.get("password")
@@ -117,11 +137,19 @@ def reset():
 
 @app.route("/register")
 def register():
-    return render_template("register.html")
+    site_key = os.environ.get("RECAPTCHA_SITE_KEY")
+    return render_template(
+        "register.html",
+        recaptcha_site_key=site_key,
+        recaptcha_enabled=RECAPTCHA_ENABLED,
+    )
 
 
 @app.route("/registration", methods=["POST"])
 def registration():
+    if not verify_recaptcha():
+        flash("reCAPTCHA verification failed. Please try again.")
+        return redirect("/register")
     name = request.form.get("name")
     email = request.form.get("email")
     passwd = request.form.get("password")
