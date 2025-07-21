@@ -1,5 +1,14 @@
 import email
-from flask import Flask, render_template, request, redirect, flash, jsonify, session
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    flash,
+    jsonify,
+    session,
+    send_file,
+)
 from flask_login import (
     LoginManager,
     login_required,
@@ -10,11 +19,14 @@ from flask_login import (
 )
 from flask_wtf import CSRFProtect
 import os
+import io
+import csv
 from datetime import timedelta  # used for setting session timeout
 import pandas as pd
 import plotly
 import plotly.express as px
 import json
+from datetime import datetime
 import warnings
 import support
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -450,6 +462,58 @@ def update_profile():
     else:
         flash("No Change!!")
         return redirect("/profile")
+
+
+@app.route("/transactions_report", methods=["GET", "POST"])
+@login_required
+def export_transactions():
+
+    if request.method == "GET":
+        # Render the export page with a form to select date range
+        return render_template("export_page.html")
+    if request.method == "POST":
+        start_date = request.form.get("start_date")
+        end_date = request.form.get("end_date")
+        user_id = current_user.id
+
+        # Validate dates
+        try:
+            start = datetime.strptime(start_date, "%Y-%m-%d")
+            end = datetime.strptime(end_date, "%Y-%m-%d")
+            if start > end:
+                flash("Start date must be before or equal to end date.")
+                return redirect("/export_page")
+        except Exception:
+            flash("Invalid date format.")
+            return redirect("/export_page")
+
+        # Query transactions in range
+        query = """
+            SELECT pdate, expense, amount, pdescription
+            FROM user_expenses
+            WHERE user_id = ? AND pdate BETWEEN ? AND ?
+            ORDER BY pdate DESC
+        """
+        transactions = support.execute_query(
+            "search", query, (user_id, start_date, end_date)
+        )
+
+        # Create CSV in memory
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(["Date", "Expense", "Amount", "Note"])
+        for row in transactions:
+            writer.writerow(row)
+        output.seek(0)
+
+        # Send as downloadable file
+        return send_file(
+            io.BytesIO(output.getvalue().encode()),
+            mimetype="text/csv",
+            as_attachment=True,
+            download_name=f"transactions_{start_date}_to_{end_date}.csv",
+        )
+    return redirect("/export_page")
 
 
 @app.route("/logout")
